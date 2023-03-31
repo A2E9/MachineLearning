@@ -36,7 +36,7 @@ void data_handler::read_feature_vector(std::string& path)
         return;
     }
 
-    // Read the header before the loop
+    // Read the header
     if (fread(header, sizeof(uint32_t), 4, file) != 4)
     {
         printf("Error reading file header.\n");
@@ -51,17 +51,18 @@ void data_handler::read_feature_vector(std::string& path)
     }
 
     printf("Done getting Input File header.\n");
+
     size_t image_size = static_cast<size_t>(header[2]) * header[3];
     for (size_t i = 0; i < header[1]; i++) // images
     {
         // printf("\n count: %lu", i);
         auto d = new data();
         uint8_t element[1];
-        for (int j = 0; j < image_size; j++) // image size
+        for (int j = 0; j < image_size; j++) // image size "Pixel values are 0 to 255. 0 means background (white), 255 means foreground (black)"
         {
-            if (fread(element, sizeof(element), 1, file)) // For each pixel, one byte of data is read and stored
+            if (fread(element, sizeof(element), 1, file)) // For each pixel, one byte of data is read and stored in element
             {
-                d->append_to_feature_vector(element[0]); // for each pixel in the image to add the pixel value
+                d->append_to_feature_vector(element[0]); // appending element (pixel) which contains a byte(0-255) of data to feature_vector 
             }
             else
             {
@@ -69,7 +70,7 @@ void data_handler::read_feature_vector(std::string& path)
                 exit(1);
             }
         }
-        data_array->push_back(d); // contains pointers to all of the data objects representing the images    784Size
+        data_array->push_back(d); // contains pointers to all of the data objects representing the images    784Size  -> 60 000 images
     }
     printf("Success read and stored %lu feature vectors. \n", (int)data_array->size());
     fclose(file);
@@ -125,7 +126,7 @@ void data_handler::split_data()
     for (size_t i = indices.size() - 1; i > 0; --i)
     {
           size_t j = rand() % (i + 1);
-          std::swap(indices[i], indices[j]); // swaping random with last one i
+          std::swap(indices[i], indices[j]); // swaping last one i with random 
     }
 
     int train_size = static_cast<int>(data_array->size() * TRAIN_SET_PERCENT);

@@ -25,9 +25,9 @@ public:
     ~data();
 
     void set_feature_vector(std::vector<uint8_t>*);
-    void append_to_feature_vector(uint8_t);
-    void set_label(uint8_t);
-    void set_enumerated_label(int);
+    void append_to_feature_vector(uint8_t); // data_handler -> read_feature_vector
+    void set_label(uint8_t); // data_handler -> read_feature_labels
+    void set_enumerated_label(int); // data_handler -> count_classes
     void set_distance(double val);
 
     double get_distance();

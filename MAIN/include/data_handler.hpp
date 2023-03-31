@@ -42,7 +42,7 @@ public:
     void split_data();
     void count_classes();
 
-    void display_image(int index);
+    //void display_image(int index);
     
     uint32_t convert_to_little_endian(uint32_t num);
 
