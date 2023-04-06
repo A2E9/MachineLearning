@@ -9,6 +9,7 @@
 
 int main()
 {
+	//Preparing data...
 	data_handler* dh = new data_handler();
 	std::string train_images = "train-images-idx3-ubyte";
 	std::string train_labels = "train-labels-idx1-ubyte";
@@ -24,19 +25,24 @@ int main()
 	knearest->set_training_data(dh->get_training_data());
 	knearest->set_test_data(dh->get_test_data());
 	knearest->set_validation_data(dh->get_validation_data());
+
 	double performance = 0;
 	double best_performance = 0;
 	int best_k = 1;
+
+	//Perofrming...
 	for (int i = 1; i < 4; i++)
 	{
 		if (i == 1)
 		{
+			printf("First run\n");
 			knearest->set_k(i);
 			performance = knearest->validate_performance();
 			best_performance = performance;
 
 		} else
 		{
+			printf("Next run\n");
 			knearest->set_k(i);
 			performance = knearest->validate_performance();
 			if (performance > best_performance)

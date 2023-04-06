@@ -19,7 +19,7 @@ KNN::KNN(int val)
 }
 KNN::KNN()
 {}
-KNN::~KNN() {}
+KNN::~KNN() { /*clear mem*/ }
 
 
 // O(N^2) if K ~ N
@@ -27,69 +27,6 @@ KNN::~KNN() {}
 //O(NlogN)
 
 
-/// <summary>
-///  It maintains a priority queue to store the distances of
-///  training points from the query point and gets the top k neighbors
-/// </summary>
-/// <param name="query_point"></param>
-void KNN::find_knearest(data* query_point)
-{
-	neighbors = new std::vector<data*>;
-	std::priority_queue<std::pair<double, data*>> nearest_queue;
-
-	for (data* train_point : *training_data)
-	{
-		double distance = calculate_distance(query_point, train_point);
-		nearest_queue.push(std::make_pair(-distance, train_point));
-	}
-
-	for (size_t i = 0; i < k; i++)
-	{
-		neighbors->push_back(nearest_queue.top().second);
-		nearest_queue.pop();
-	}
-}
-//void KNN::find_knearest(data* query_point)
-//{
-//	neighbors = new std::vector<data*>;
-//	double min = std::numeric_limits<double>::max();
-//	double previous_min = min;
-//	int index = 0;
-//
-//	for (size_t i = 0; i < k; i++)
-//	{
-//		if (i == 0)
-//		{
-//			for (size_t j = 0; j < training_data->size(); j++)
-//			{
-//				double distance = calculate_distance(query_point, training_data->at(j));
-//				training_data->at(j)->set_distance(distance);
-//				if (distance < min)
-//				{
-//					min = distance;
-//					index = j;
-//				}
-//			}
-//			neighbors->push_back(training_data->at(index));
-//			previous_min = min;
-//			min = std::numeric_limits<double>::max();
-//		} else
-//		{
-//			for (size_t j = 0; j < training_data->size(); j++)
-//			{
-//				double distance = training_data->at(j)->get_distance();
-//				if (distance > previous_min && distance < min)
-//				{
-//					min = distance;
-//					index = j;
-//				}
-//			}
-//			neighbors->push_back(training_data->at(index));
-//			previous_min = min;
-//			min = std::numeric_limits<double>::max();
-//		}
-//	}
-//}
 void KNN::set_training_data(std::vector<data*>* vect)
 {
 	training_data = vect;
@@ -130,33 +67,61 @@ int KNN::predict()
 	int best = 0;
 	int max = 0;
 
+	
 	for (auto& kv : class_freq)
 	{
 		if (kv.second > max)
 		{
-			max = kv.second;
 			best = kv.first;
+			max = kv.second;
+			
 		}
 	}
 
 	delete neighbors;
 	return best;
 }
+/// <summary>
+///  It maintains a priority queue to store the distances of
+///  training points from the query point and gets the top k neighbors
+/// </summary>
+/// <param name="query_point"></param>
+void KNN::find_knearest(data* query_point)
+{
+	neighbors = new std::vector<data*>; // new vector of data
+	std::priority_queue<std::pair<double, data*>> nearest_queue; // queue for distance and tranining instance
+
+	for (data* train_point : *training_data)
+	{
+		double distance = calculate_distance(query_point, train_point);
+		nearest_queue.push(std::make_pair(-distance, train_point)); // negative distance between query_point and train_point
+	}
+
+	for (size_t i = 0; i < k; i++)
+	{
+		neighbors->push_back(nearest_queue.top().second);
+		nearest_queue.pop();
+	}
+}
 
 
-double KNN::calculate_distance(data* query_point, data* input)
+double KNN::calculate_distance(data* from_point, data* to_point)
 {
 	double distance = 0.0;
-	if (query_point->get_feature_vector_size() != input->get_feature_vector_size())
+	const size_t from_size = from_point->get_feature_vector_size(); // 784
+
+	if (from_size != to_point->get_feature_vector_size()) // valid size
 	{
 		printf("\nError Vector Size Mismatch.\n");
 		exit(1);
 	}
+
 #ifndef EUCLID
-	for (size_t i = 0; i < query_point->get_feature_vector_size(); i++)
+	// distance = sqrt( pow(a1-b1) + pow(a2-b2) )
+	for (size_t i = 0; i < from_size; i++)
 	{
-		distance += pow(query_point->get_feature_vector()->at(i) - input->get_feature_vector()->at(i), 2);
-		//printf("Distance %f \n", distance);
+					// (a-b)² + (a2-b2)² + ...
+		distance += pow(from_point->get_feature_vector()->at(i) - to_point->get_feature_vector()->at(i), 2);
 	}
 	distance = sqrt(distance);
 
@@ -165,31 +130,34 @@ double KNN::calculate_distance(data* query_point, data* input)
 #endif // !EUCLID
 	return distance;
 }
+
+
+
+
 double KNN::validate_performance()
 {
 	double crr_performance = 0;
 	int checked = 0;
 	int count = 0;
 	int data_index = 0;
-	for (auto& query_point : *validation_data)
+	for (auto& validation_point : *validation_data) // Validation Vector [0.05 - 3000]
 	{
-		find_knearest(query_point);
+		find_knearest(validation_point);
 		int prediction = predict();
 
-		auto check = prediction == query_point->get_label();
-		printf("%d -> %d  -------------------->  %s\n", prediction, query_point->get_label(), check ? "same":"[(FALSE)]");
-		printf("Checked: %d\n", checked++);
+		auto check = prediction == validation_point->get_label();
+		printf("\n%d  <---------[%d -> %d]--------->  %s\n", checked++, prediction, validation_point->get_label(), check ? "same":"[(FALSE)]");
 
-		//cv::Mat image = query_point->get_image(); // Assuming `get_image()` returns a cv::Mat object
+		//cv::Mat image = validation_point->get_image(); 
 		//cv::imshow("Image", image);
 		//cv::waitKey(500);
 
-		if (prediction == query_point->get_label())
+		if (prediction == validation_point->get_label())
 		{
 			count++;
 		}
 		data_index++;
-		printf("Current Performance = %.3f %%\n", ((double)count * 100.0) / ((double)data_index));
+		printf("Performance = %.3f %%\n", ((double)count * 100.0) / ((double)data_index));
 	}
 	crr_performance = (double)count * 100.0 / (double)validation_data->size();
 	printf("Validation Performance for K = %d: %.3f %%\n", k, crr_performance);

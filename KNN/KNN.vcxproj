@@ -71,20 +71,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>C:\Users\vre\Valentyn\ML\mnist_ml_tuto\</OutDir>
-    <TargetName>start</TargetName>
+    <OutDir>..\..\..\..\..\tools</OutDir>
+    <TargetName>Matrix</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>C:\Users\vre\Valentyn\ML\mnist_ml_tuto\</OutDir>
-    <TargetName>start</TargetName>
+    <OutDir>..\..\..\..\..\tools</OutDir>
+    <TargetName>Matrix</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>C:\Users\vre\Valentyn\ML\mnist_ml_tuto\</OutDir>
-    <TargetName>start</TargetName>
+    <OutDir>..\..\..\..\..\tools</OutDir>
+    <TargetName>Matrix</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>C:\Users\vre\Valentyn\ML\mnist_ml_tuto\</OutDir>
-    <TargetName>start</TargetName>
+    <OutDir>..\..\..\..\..\tools</OutDir>
+    <TargetName>Matrix</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

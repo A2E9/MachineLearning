@@ -25,6 +25,9 @@ data_handler::~data_handler()
 {
     // free dyn aloc
 }
+
+
+
 void data_handler::read_feature_vector(std::string& path)
 {
     uint32_t header[4]; // magic|num images|Rowsize|Colsize
@@ -75,6 +78,9 @@ void data_handler::read_feature_vector(std::string& path)
     printf("Success read and stored %lu feature vectors. \n", (int)data_array->size());
     fclose(file);
 }
+
+
+
 void data_handler::read_feature_labels(std::string path)
 {
     uint32_t header[2]; // magic|num images
@@ -113,8 +119,11 @@ void data_handler::read_feature_labels(std::string path)
     {
         printf("File not found!");
     }
-    fclose(f);
+    f ? fclose(f) : NULL; // could be 0
 }
+
+
+
 void data_handler::split_data()
 {
     srand((unsigned int)time(0));

@@ -16,7 +16,7 @@ Container to hold each line item
 class data
 {
 private:
-    std::vector<uint8_t> * feature_vector; 
+    std::vector<uint8_t> * feature_vector; // byte(0-255) of data size: 784
     uint8_t label;
     int enum_label; //A -> 1, B -> 2
     double distance;
