@@ -18,7 +18,7 @@ public:
 	KNN();
 	~KNN();
 
-	int predict();
+	uint8_t predict();
 	void find_knearest(data* query_point);
 	double calculate_distance(data* query_point, data* input);
 

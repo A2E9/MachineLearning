@@ -49,8 +49,10 @@ void KNN::set_k(int val)
 /// Predicts the class label for the given query point
 /// based on the k-nearest neighbors
 /// </summary>
-/// <returns></returns>
-int KNN::predict()
+/// <returns>
+/// most frequent label
+/// </returns>
+uint8_t KNN::predict()
 {
 	std::map<uint8_t, int> class_freq;
 	for (size_t i = 0; i < neighbors->size(); i++)
@@ -58,23 +60,24 @@ int KNN::predict()
 		if (class_freq.find(neighbors->at(i)->get_label()) == class_freq.end())
 		{
 			class_freq[neighbors->at(i)->get_label()] = 1;
-		} else
+		}
+		else
 		{
 			class_freq[neighbors->at(i)->get_label()]++;
 		}
 	}
 
-	int best = 0;
+	uint8_t best = 0;
 	int max = 0;
 
-	
+
 	for (auto& kv : class_freq)
 	{
-		if (kv.second > max)
+		if (kv.second > max)// frequency 
 		{
-			best = kv.first;
+			best = kv.first; // label
 			max = kv.second;
-			
+
 		}
 	}
 
@@ -94,7 +97,7 @@ void KNN::find_knearest(data* query_point)
 	for (data* train_point : *training_data)
 	{
 		double distance = calculate_distance(query_point, train_point);
-		nearest_queue.push(std::make_pair(-distance, train_point)); // negative distance between query_point and train_point
+		nearest_queue.push(std::make_pair(-distance, train_point)); // negative distance between query_point and train_point | archieve ascending
 	}
 
 	for (size_t i = 0; i < k; i++)
@@ -120,7 +123,7 @@ double KNN::calculate_distance(data* from_point, data* to_point)
 	// distance = sqrt( pow(a1-b1) + pow(a2-b2) )
 	for (size_t i = 0; i < from_size; i++)
 	{
-					// (a-b)² + (a2-b2)² + ...
+		// (a1-b1)² + (a2-b2)² + ...
 		distance += pow(from_point->get_feature_vector()->at(i) - to_point->get_feature_vector()->at(i), 2);
 	}
 	distance = sqrt(distance);
@@ -133,7 +136,12 @@ double KNN::calculate_distance(data* from_point, data* to_point)
 
 
 
-
+/// <summary>
+/// Calculate the distance between all training images and a single validation image, 
+/// then select the k training points with the smallest distances. Determine the most 
+/// frequent label among these neighbors and check if it matches the label of the validation image.
+/// </summary>
+/// <returns></returns>
 double KNN::validate_performance()
 {
 	double crr_performance = 0;
@@ -142,11 +150,11 @@ double KNN::validate_performance()
 	int data_index = 0;
 	for (auto& validation_point : *validation_data) // Validation Vector [0.05 - 3000]
 	{
-		find_knearest(validation_point);
-		int prediction = predict();
+		find_knearest(validation_point); // creating neighbors to the foto
+		uint8_t prediction = predict(); // most frequent label
 
 		auto check = prediction == validation_point->get_label();
-		printf("\n%d  <---------[%d -> %d]--------->  %s\n", checked++, prediction, validation_point->get_label(), check ? "same":"[(FALSE)]");
+		printf("\n%d  <---------[%d -> %d]--------->  %s\n", checked++, prediction, validation_point->get_label(), check ? "same" : "[(FALSE)]");
 
 		//cv::Mat image = validation_point->get_image(); 
 		//cv::imshow("Image", image);
