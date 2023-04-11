@@ -3,14 +3,15 @@
 #include<limits>
 #include <map>
 #include "stdint.h"
-#include "data_handler.hpp"
-#include "KNN.hpp"
 #include <queue>
 
+#include "KNN.hpp"
+#include "DATA/include/data_handler.hpp"
 
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
+//#include <opencv2/core.hpp>
+//#include <opencv2/highgui.hpp>
+//#include <opencv2/imgproc.hpp>
+#include <iostream>
 
 
 KNN::KNN(int val)
@@ -26,19 +27,6 @@ KNN::~KNN() { /*clear mem*/ }
 // if k = 2 then O(~N)
 //O(NlogN)
 
-
-void KNN::set_training_data(std::vector<data*>* vect)
-{
-	training_data = vect;
-}
-void KNN::set_test_data(std::vector<data*>* vect)
-{
-	test_data = vect;
-}
-void KNN::set_validation_data(std::vector<data*>* vect)
-{
-	validation_data = vect;
-}
 void KNN::set_k(int val)
 {
 	k = val;
@@ -190,4 +178,45 @@ double KNN::test_performance()
 	crr_performance = (double)count * 100.0 / (double)test_data->size();
 	printf("Tested Performance %.3f %%\n", crr_performance);
 	return crr_performance;
+}
+
+void KNN::run_knn(data_handler* dh)
+{
+	KNN* knearest = new KNN();
+
+	knearest->set_training_data(dh->get_training_data());
+	knearest->set_test_data(dh->get_test_data());
+	knearest->set_validation_data(dh->get_validation_data());
+
+	double performance = 0;
+	double best_performance = 0;
+	int best_k = 1;
+
+	//Perofrming...
+	for (int i = 1; i < 4; i++)
+	{
+		if (i == 1)
+		{
+			printf("First run\n");
+			knearest->set_k(i);
+			performance = knearest->validate_performance();
+			best_performance = performance;
+
+		}
+		else
+		{
+			printf("Next run\n");
+			knearest->set_k(i);
+			performance = knearest->validate_performance();
+			if (performance > best_performance)
+			{
+				best_performance = performance;
+				best_k = i;
+			}
+		}
+	}
+
+
+	knearest->set_k(best_k);
+	knearest->test_performance();
 }

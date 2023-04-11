@@ -43,7 +43,7 @@ public:
     void count_classes();
 
     //void display_image(int index);
-    
+    int get_class_counts();
     uint32_t convert_to_little_endian(uint32_t num);
 
     std::vector<data *> *get_training_data();

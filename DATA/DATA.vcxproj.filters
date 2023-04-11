@@ -13,15 +13,41 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Train Data">
+      <UniqueIdentifier>{84e38b99-2b61-4e8f-b055-f3a2408d4fcf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\KNN.cpp">
-      <Filter>Resource Files</Filter>
+    <ClCompile Include="no_start.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\KNN.hpp">
+    <ClInclude Include="include\data.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\data_handler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\train-labels-idx1-ubyte">
+      <Filter>Train Data</Filter>
+    </None>
+    <None Include="..\train-images-idx3-ubyte">
+      <Filter>Train Data</Filter>
+    </None>
   </ItemGroup>
 </Project>

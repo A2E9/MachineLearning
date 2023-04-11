@@ -1,17 +1,15 @@
 #ifndef __KNN_H
 #define __KNN_H
-#include <vector>
-#include "data.hpp"
+#include "../../DATA/include/common.hpp"
+#include "../../DATA/include/data_handler.hpp"
 
 
-class KNN
+class KNN : public common_data
 {
 private:
 	int k;
 	std::vector<data*>* neighbors;
-	std::vector<data*>* training_data;
-	std::vector<data*>* test_data;
-	std::vector<data*>* validation_data;
+
 
 public:
 	KNN(int);
@@ -26,9 +24,9 @@ public:
 	double test_performance();
 
 	void set_k(int val);
-	void set_training_data(std::vector<data*>* vect);
-	void set_test_data(std::vector<data*>* vect);
-	void set_validation_data(std::vector<data*>* vect);
+
+	void run_knn(data_handler* dh);
+
 };
 
 #endif // !__KNN_H

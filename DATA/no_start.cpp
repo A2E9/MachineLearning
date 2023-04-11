@@ -1,30 +1,8 @@
 // MNIST_ML.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-//
-//#include <iostream>
-//#include "./include/data_handler.hpp"
-//
-//
-//
-//
-//
-//
-//
-//int main()
-//{
-//    data_handler* dh = new data_handler();
-//
-//    std::string train_images = "/train-images-idx3-ubyte";
-//    std::string train_labels = "/train-labels-idx1-ubyte";
-//    dh->read_feature_vector(train_images);
-//    dh->read_feature_labels(train_labels);
-//    dh->split_data();
-//    dh->count_classes();
-//
-//
-//    getchar();
-//    delete dh;
-//}
+
+
+
+
 
 
 /*

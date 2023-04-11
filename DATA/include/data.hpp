@@ -6,9 +6,9 @@
 #include "stdio.h"
 
 
-#include <opencv2/core.hpp>
+/*#include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
+#include <opencv2/imgproc.hpp>*/
 /*
 Container to hold each line item
 */
@@ -38,7 +38,7 @@ public:
     std::vector<uint8_t> * get_feature_vector();
 
 
-    cv::Mat get_image()
+    /*cv::Mat get_image()
     {
         int image_width = (int)sqrt(get_feature_vector_size());
         int image_height = (int)get_feature_vector_size() / image_width;
@@ -54,7 +54,7 @@ public:
         }
 
         return image;
-    }
+    }*/
 };
 
 

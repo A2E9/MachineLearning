@@ -1,5 +1,5 @@
 #define _ITERATOR_DEBUG_LEVEL 0
-#include "./include/data_handler.hpp"
+#include "../include/data_handler.hpp"
 #include <iostream>
 #include <numeric>
 #include <random>
@@ -200,6 +200,10 @@ std::vector<data*>* data_handler::get_test_data()
 std::vector<data*>* data_handler::get_validation_data()
 {
     return validation_data;
+}
+int data_handler::get_class_counts()
+{
+    return num_classes;
 }
 
 

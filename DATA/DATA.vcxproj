@@ -71,20 +71,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(ProjectDir)lib/</OutDir>
-    <TargetName>lib_data</TargetName>
+    <OutDir>..\libs</OutDir>
+    <TargetName>data</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(ProjectDir)lib/</OutDir>
-    <TargetName>lib_data</TargetName>
+    <OutDir>..\libs</OutDir>
+    <TargetName>data</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)lib/</OutDir>
-    <TargetName>lib_data</TargetName>
+    <OutDir>..\libs</OutDir>
+    <TargetName>data</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(ProjectDir)lib/</OutDir>
-    <TargetName>lib_data</TargetName>
+    <OutDir>..\libs</OutDir>
+    <TargetName>data</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,8 +97,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\vre\Desktop\MachineLearning\MAIN\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>/EHsc /MDd /LD %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>C:\Users\vre\Desktop\MachineLearning\DATA\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
     <Lib>
@@ -124,8 +123,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\vre\Desktop\MachineLearning\MAIN\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>/EHsc /MDd /LD %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>C:\Users\vre\Desktop\MachineLearning\DATA\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
     <Lib>
@@ -147,8 +145,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\vre\Desktop\MachineLearning\MAIN\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>/EHsc /MDd /LD %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>C:\Users\vre\Desktop\MachineLearning\DATA\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
     <Lib>
@@ -174,8 +171,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\vre\Desktop\MachineLearning\MAIN\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>/EHsc /MDd /LD %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>C:\Users\vre\Desktop\MachineLearning\DATA\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
     <Lib>
@@ -187,11 +183,13 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="data.cpp" />
-    <ClCompile Include="data_handler.cpp" />
     <ClCompile Include="no_start.cpp" />
+    <ClCompile Include="src\common.cpp" />
+    <ClCompile Include="src\data.cpp" />
+    <ClCompile Include="src\data_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\common.hpp" />
     <ClInclude Include="include\data.hpp" />
     <ClInclude Include="include\data_handler.hpp" />
   </ItemGroup>
