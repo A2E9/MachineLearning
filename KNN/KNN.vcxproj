@@ -71,19 +71,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\libs</OutDir>
+    <OutDir>..\libs\</OutDir>
     <TargetName>knn</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\libs</OutDir>
+    <OutDir>..\libs\</OutDir>
     <TargetName>knn</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\libs</OutDir>
+    <OutDir>..\libs\</OutDir>
     <TargetName>knn</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\libs</OutDir>
+    <OutDir>..\libs\</OutDir>
     <TargetName>knn</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -159,11 +159,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\KNN.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MAIN\MAIN.vcxproj">
-      <Project>{4f482d33-808b-4018-a592-05e6208fa103}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

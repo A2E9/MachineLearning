@@ -8,42 +8,60 @@
 #include "../../DATA/include/common.hpp"
 #include "../../DATA/include/data_handler.hpp"
 
+//struct has public memb opposite to class
 typedef struct cluster
 {
-	std::vector<double>* centroid;
+	int most_freq_class;
+
+	std::vector<float>* centroid;
 	std::vector<data*>* cluster_points;
 	std::map<int, int> class_count;
 
-	int most_freq_class;
 
+
+	/// <summary>
+	/// assigning the feature vector from initial to the centroid
+	/// adding to cluster_points
+	/// initializes a class count map with the initial points label 
+	/// </summary>
+	/// <param name="initial_point">
+	/// used to create the new cluster
+	/// </param>
 	cluster(data* initial_point)
 	{
-		centroid = new std::vector<double>;
+		centroid = new std::vector<float>;
 		cluster_points = new std::vector<data*>;
 
-		for (auto& value : *(initial_point->get_feature_vector()))
-		{
-			centroid->push_back(value);// pushing feature vector elements(bytes) of init_point
-		}
-		cluster_points->push_back(initial_point); // pushing point into cluster
-		class_count[initial_point->get_label()] = 1; // creating element at label = 1
-		most_freq_class = initial_point->get_label(); // setting initial point label
+		const auto& init_feature_vector = *(initial_point->get_feature_vector());
+
+		centroid->assign(init_feature_vector.begin(), init_feature_vector.end()); // uint8_t to float
+		cluster_points->emplace_back(initial_point);
+
+		class_count[initial_point->get_label()] = 1;
+		most_freq_class = initial_point->get_label();
 	}
 
+
+	/// <summary>
+	/// calc new centroid 
+	/// </summary>
+	/// <param name="point"></param>
 	void add_to_cluster(data* point)
 	{
 		size_t pcluster_size = cluster_points->size();
-		cluster_points->push_back(point); // pushing point into cluster
+		cluster_points->emplace_back(point); // pushing point into cluster
 
 		for (size_t i = 0; i < centroid->size() - 1; i++)
 		{
-			double value = centroid->at(i);				 // [=] i feature of the data point
+			float value = centroid->at(i);				 // [=] i feature of the data point
 			value *= pcluster_size;						 // [*] prev cluster size (weight the contribution of the previous centroid)
 			value += point->get_feature_vector()->at(i); // [+] new point byte at i (new feature value adding to weighted sum of feature values)
-			value /= (double)cluster_points->size();	 // [/] new cluster size (to calculate the new centroid value)
+			value /= (float)cluster_points->size();	     // [/] new cluster size (to calculate the new centroid value)
 			centroid->at(i) = value;					 // [=] to i centroid calcd_value
 		}
 
+
+		//frequency of labels in class_counts
 		if (class_count.find(point->get_label()) == class_count.end())
 		{
 			class_count[point->get_label()] = 1;
@@ -76,21 +94,23 @@ typedef struct cluster
 
 class kmeans : public common_data
 {
+private:
 	int num_clusters;
 	std::vector<cluster_t*>* clusters;
 	std::unordered_set<int>* used_indexes;
+
 public:
 	kmeans();
 	kmeans(int k);
+	~kmeans();
 
 	void init_clusters();
 	void init_clusters_foreach_class();
 	void train();
-	
-	double euclidean_distance(std::vector<double>*, data*);
-	double validate();
-	double test();
+
+	float validate();
+	float test();
+	float euclidean_distance(const std::vector<float>* centroid, const std::vector<uint8_t>* feat_vect);
 
 	void run_kmean(data_handler*);
-
 };
