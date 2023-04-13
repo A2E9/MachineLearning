@@ -8,6 +8,7 @@
 #include "../DATA/include/data_handler.hpp"
 #include "../KNN/include/KNN.hpp"
 #include "../KMEANS/include/kmeans.hpp"
+#include <../NEURAL_NET/include/network.hpp>
 
 
 int main()
@@ -27,6 +28,7 @@ int main()
     std::cout << "\nChoose algorithm to run: " << std::endl;
     std::cout << "1. K-means clustering" << std::endl;
     std::cout << "2. K-nearest neighbors classification" << std::endl;
+    std::cout << "3. Deep Learning Neural Network" << std::endl;
     std::cout << "Your choice: ";
     std::cin >> choice;
     std::cout << "\n";
@@ -42,6 +44,10 @@ int main()
         KNN* knn = new KNN();
         knn->run_knn(dh);
         delete knn;
+    }else if (choice == 3)
+    {
+        Network* net = new Network();
+        delete net;
     }
     else
     {

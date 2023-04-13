@@ -26,12 +26,19 @@ private:
     std::vector<data *> *validation_data;
 
     int num_classes;
-    int feature_vector_size;
+    size_t feature_vector_size;
     std::map<uint8_t, int> class_map;
 
     const double TRAIN_SET_PERCENT = 0.75;
     const double TEST_SET_PERCENT = 0.20;
     const double VALIDATION_PERCENT = 0.05;
+
+    //Deep
+    std::map<std::string, int> class_s_map;
+
+
+    //Learn
+
 
 public:
     data_handler(/* args */);
@@ -51,6 +58,12 @@ public:
     std::vector<data *> *get_validation_data();
 
 
+
+    //Deep
+    void read_csv(std::string path, std::string delimiter);
+
+
+    //Learn
 
 };
 

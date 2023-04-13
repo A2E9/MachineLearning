@@ -20,6 +20,12 @@ private:
     uint8_t label;
     int enum_label; //A -> 1, B -> 2
     double distance;
+   
+    //Deep
+    std::vector<int>* class_vector;
+    std::vector<float>* float_feature_vector;
+    //Learn
+
 public:
     data(/* args */);
     ~data();
@@ -31,11 +37,27 @@ public:
     void set_distance(double val);
 
     double get_distance();
-    size_t get_feature_vector_size();
+
     uint8_t get_label();
     uint8_t get_enumerated_label();
-
+    size_t get_feature_vector_size();
     std::vector<uint8_t> * get_feature_vector();
+
+    //Deep
+    void set_class_vector(int);
+    void append_to_feature_vector(float);
+    void set_float_feature_vector(std::vector<float>*);
+
+    std::vector<int>* get_class_vector();
+    std::vector<float>* get_float_feature_vector();
+    //Learn
+
+
+
+
+
+
+
 
 
     /*cv::Mat get_image()

@@ -90,7 +90,7 @@ void KNN::find_knearest(data* query_point)
 
 	for (size_t i = 0; i < k; i++)
 	{
-		neighbors->push_back(nearest_queue.top().second);
+		neighbors->emplace_back(nearest_queue.top().second);
 		nearest_queue.pop();
 	}
 }

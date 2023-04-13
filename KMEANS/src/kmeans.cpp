@@ -114,7 +114,7 @@ float kmeans::validate()
 		}
 		if (clusters->at(best_cluster)->most_freq_class == query_point->get_label()) num_correct++; // check the predicted class
 	}
-	return 100.0 * (num_correct / (float)validation_data->size());
+	return (100.0f * (num_correct / (float)validation_data->size()));
 }
 
 
@@ -137,16 +137,16 @@ float kmeans::test()
 		}
 		if (clusters->at(best_cluster)->most_freq_class == query_point->get_label()) num_correct++;
 	}
-	return 100.0 * (num_correct / (float)test_data->size());
+	return 100.0f * (num_correct / (float)test_data->size());
 }
 
 
 float kmeans::euclidean_distance(const std::vector<float>* centroid, const std::vector<uint8_t>* feat_vect)
 {
-	double dist = 0.0;
+	float dist = 0.0;
 	for (size_t i = 0; i < centroid->size(); i++)
 	{
-		dist += pow(centroid->at(i) - feat_vect->at(i), 2); // (a1-b1)² + (a2-b2)² + ...
+		dist += (float)pow(centroid->at(i) - feat_vect->at(i), 2); // (a1-b1)² + (a2-b2)² + ...
 	}
 	return sqrt(dist);
 }
@@ -160,7 +160,7 @@ void kmeans::init_clusters_foreach_class()
 	{
 		if (classes_used.find(training_data->at(i)->get_label()) == classes_used.end())
 		{
-			clusters->push_back(new cluster_t(training_data->at(i)));
+			clusters->emplace_back(new cluster_t(training_data->at(i)));
 			classes_used.insert(training_data->at(i)->get_label());
 			used_indexes->insert((int)i);
 		}
