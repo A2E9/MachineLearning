@@ -5,41 +5,17 @@
 #include <vector>
 
 
-class Neuron
+class neuron
 {
 public:
-	Neuron(int, int){}
 
-	~Neuron() {}
-
-	void setError(float);
-	void setWeight(float, int);
-	void initialize_wights(int prev_layer_size, int crr_layer_size);
-	
-	float relu();
-	float sigmoid();
-	float activate();
-	float get_error();
-	float get_output();
-	float leaky_relu();
-	float inverse_sqrt_relu();
-	float get_output_derivative();
-	float calc_output_derivative();
-	float calc_pre_activation(std::vector<float>);
-
-	std::vector<float> get_weights();
-
-
-
-private:
+	float output;
+	float delta;
 	std::vector<float> weights;
-	
-	float alpha;
-	float error;
-	float pre_activation;
-	float activated_ouput;
-	float output_derivative;
+
+	neuron(size_t, int);
+	~neuron();
+
+	void initialize_weights(size_t prev_layer_size);
 };
-
-
 #endif // !__NEURON_HPP
