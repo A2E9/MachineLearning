@@ -5,6 +5,7 @@
 #include <random>
 #include <vector>
 #include <memory>
+#include "../../KMEANS/include/kmeans.hpp"
 
 
 //#include <opencv2/core.hpp>
@@ -12,11 +13,11 @@
 //#include <opencv2/imgproc.hpp>
 
 
-data_handler::data_handler(/* args */)
+data_handler::data_handler()
 {
 	num_classes = 0;
 	feature_vector_size = 0;
-	data_array = new std::vector<data*>;
+	data_array = new std::vector<data*> ;
 	training_data = new std::vector<data*>;
 	test_data = new std::vector<data*>;
 	validation_data = new std::vector<data*>;
@@ -75,6 +76,7 @@ void data_handler::read_feature_vector(std::string& path)
 		}
 		data_array->emplace_back(d); // contains pointers to all of the data objects representing the images    784Size  -> 60 000 images
 	}
+	normalize();
 	printf("Success read and stored %lu feature vectors. \n", (int)data_array->size());
 	fclose(file);
 }
@@ -178,13 +180,13 @@ void data_handler::count_classes()
 		}
 	}
 	num_classes = count;
-	for (auto& data : *data_array)
+	for (const auto& data : *data_array)
 		data->set_class_vector(num_classes);
-	
+
 	printf("Successfully extracted %d unique Classes.\n", num_classes);
 }
 
-uint32_t data_handler::convert_to_little_endian(uint32_t num)
+uint32_t data_handler::convert_to_little_endian(uint32_t num) const
 {
 	return ((num >> 24) & 0xff) |
 		((num << 8) & 0xff0000) |
@@ -192,19 +194,19 @@ uint32_t data_handler::convert_to_little_endian(uint32_t num)
 		((num << 24) & 0xff000000);
 }
 
-std::vector<data*>* data_handler::get_training_data()
+std::vector<data*>* data_handler::get_training_data() const
 {
 	return training_data;
 }
-std::vector<data*>* data_handler::get_test_data()
+std::vector<data*>* data_handler::get_test_data() const
 {
 	return test_data;
 }
-std::vector<data*>* data_handler::get_validation_data()
+std::vector<data*>* data_handler::get_validation_data() const
 {
 	return validation_data;
 }
-int data_handler::get_class_counts()
+int data_handler::get_class_counts() const
 {
 	return num_classes;
 }
@@ -213,19 +215,28 @@ int data_handler::get_class_counts()
 void data_handler::read_csv(std::string path, std::string delimiter)
 {
 	num_classes = 0;
-	std::ifstream data_file(path.c_str());
+	std::ifstream data_file;
+	data_file.open(path.c_str());
 	std::string line;
+	if (!data_file)
+	{
+		std::cout << "File2 not found\n";
+		std::cout << path.c_str();
+
+		return;
+	}
+
 	while (std::getline(data_file, line))
 	{
 		if (line.length() == 0) continue;
 		data* d = new data();
-		d->set_float_feature_vector(new std::vector<float>());
+		d->set_normalized_feature_vector(new std::vector<float>());
 		size_t position = 0;
 		std::string token; // value in between delimiter
 		while ((position = line.find(delimiter)) != std::string::npos)
 		{
 			token = line.substr(0, position);
-			d->append_to_feature_vector(std::stof(token));
+			d->append_to_feature_vector((uint8_t)std::stof(token));
 			line.erase(0, position + delimiter.length());
 		}
 		if (class_s_map.find(line) != class_s_map.end())
@@ -240,8 +251,54 @@ void data_handler::read_csv(std::string path, std::string delimiter)
 		}
 		data_array->emplace_back(d);
 	}
-	feature_vector_size = data_array->at(0)->get_float_feature_vector()->size();
+	for (data* d : *data_array)
+		d->set_class_vector(num_classes);
+	//normalize();
+	feature_vector_size = data_array->at(0)->get_normalized_feature_vector()->size();
 }
+
+
+void data_handler::normalize()
+{
+	std::vector<float> min, max; //fill lists
+
+	data* d = data_array->at(0);
+	for (const auto& val : *d->get_feature_vector())
+	{
+		min.emplace_back(val);
+		max.emplace_back(val);
+	}
+
+
+	for (size_t i = 0; i < data_array->size(); i++)
+	{
+		d = data_array->at(i);
+		for (size_t j = 0; j < d->get_feature_vector_size(); j++)
+		{
+			float value = (float)d->get_feature_vector()->at(j);
+			if (value < min.at(j)) min[j] = value;
+			if (value > max.at(j)) min[j] = value;
+		}
+	}
+	//normailize data_array
+
+	for (size_t i = 0; i < data_array->size(); i++)
+	{
+		const auto &data_vector = data_array->at(i); //??????????????????????????????????????????????
+
+		data_vector->set_normalized_feature_vector(new std::vector<float>());
+		data_vector->set_class_vector(num_classes);	
+
+		for (size_t j = 0; j < data_vector->get_feature_vector_size(); j++)
+		{
+			if (max[j] - min[j] == 0)
+				data_vector->append_to_float_feature_vector(0.0f);
+			else
+				data_vector->append_to_float_feature_vector((float)(data_vector->get_feature_vector()->at(j) - min[j]) / (max[j] - min[j]));
+		}
+	}
+}
+
 //Learn
 
 

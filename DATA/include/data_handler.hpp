@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <unordered_set>
+#include <iostream>
 
 /*
 Implement Logic needed to read-in, split the data
@@ -32,7 +33,9 @@ private:
     const double TRAIN_SET_PERCENT = 0.75;
     const double TEST_SET_PERCENT = 0.20;
     const double VALIDATION_PERCENT = 0.05;
-
+    /*const double TRAIN_SET_PERCENT = 0.1;
+    const double TEST_SET_PERCENT = 0.075;
+    const double VALIDATION_PERCENT = 0.005;*/
     //Deep
     std::map<std::string, int> class_s_map;
 
@@ -50,18 +53,18 @@ public:
     void count_classes();
 
     //void display_image(int index);
-    int get_class_counts();
-    uint32_t convert_to_little_endian(uint32_t num);
+    int get_class_counts() const;
+    uint32_t convert_to_little_endian(uint32_t num) const;
 
-    std::vector<data *> *get_training_data();
-    std::vector<data *> *get_test_data();
-    std::vector<data *> *get_validation_data();
+    std::vector<data *> *get_training_data() const;
+    std::vector<data *> *get_test_data() const;
+    std::vector<data *> *get_validation_data() const;
 
 
 
     //Deep
     void read_csv(std::string path, std::string delimiter);
-
+    void normalize();
 
     //Learn
 

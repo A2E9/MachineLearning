@@ -1,5 +1,6 @@
 #define _ITERATOR_DEBUG_LEVEL 0
 #include "../include/data.hpp"
+#include <iostream>
 
 
 data::data()
@@ -10,7 +11,7 @@ data::data()
 	distance = NULL;
 	enum_label = NULL;
 	class_vector = NULL;
-	float_feature_vector = NULL;
+	normalized_feature_vector = NULL;
 }
 data::~data()
 {
@@ -80,21 +81,43 @@ void data::set_class_vector(int count)
 		}
 	}
 }
-void data::append_to_feature_vector(float val)
+void data::append_to_float_feature_vector(float val)
 {
-	float_feature_vector->emplace_back(val);
+	normalized_feature_vector->emplace_back(val);
 }
-void data::set_float_feature_vector(std::vector<float>* vect)
+void data::set_normalized_feature_vector(std::vector<float>* vect)
 {
-	float_feature_vector = vect;
+	normalized_feature_vector = vect;
 }
 
 std::vector<int>* data::get_class_vector()
 {
 	return class_vector;
 }
-std::vector<float>* data::get_float_feature_vector()
+std::vector<float>* data::get_normalized_feature_vector()
 {
-	return float_feature_vector;
+	return normalized_feature_vector;
+}
+
+
+void data::print_vector()
+{
+	printf("[ ");
+	for (uint8_t val : *feature_vector)
+	{
+		printf("%u ", val);
+	}
+	printf("]\n");
+}
+
+void data::print_normalized_vector()
+{
+	printf("[ ");
+	for (auto val : *normalized_feature_vector)
+	{
+		printf("%.2f ", val);
+	}
+	printf("]\n");
+
 }
 //Learn
