@@ -17,9 +17,13 @@
 KNN::KNN(int val)
 {
 	k = val;
+	neighbors = {};
 }
 KNN::KNN()
-{}
+{
+	k = 0;
+	neighbors = {};
+}
 KNN::~KNN() { /*clear mem*/ }
 
 
