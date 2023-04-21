@@ -28,8 +28,8 @@ int main()
 		int choice;
 		std::cout << "\nChoose algorithm to run: " << std::endl;
 		std::cout << "1. K-means clustering" << std::endl;
-		std::cout << "2. K-nearest neighbors classification" << std::endl;
-		std::cout << "3. Deep Learning Neural Network" << std::endl;
+		std::cout << "2. K-nearest neighbors" << std::endl;
+		std::cout << "3. Artificial Neural Network" << std::endl;
 		std::cout << "4. Quit" << std::endl;
 		std::cout << "Your choice >> ";
 		std::cin >> choice;

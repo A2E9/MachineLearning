@@ -42,6 +42,8 @@ float network::activate(std::vector<float> weights, std::vector<float> inputs)
 	}
 	return activation;
 }
+
+
 /// <summary>
 /// add non-linearity to the output of a neuron
 /// </summary>
@@ -195,8 +197,6 @@ void network::train(size_t num_epochs)
 }
 
 
-
-
 /// <summary>
 /// A method that generates a prediction for a given input data instance by selecting the class with the highest output value from the output layer
 /// 
@@ -219,9 +219,6 @@ const float network::evaluate_performance(const std::vector<data*> &data_set)
 	for (auto& data : data_set)
 	{
 		int index = predict(data); // index of the largest output 
-		
-		std::cout << "Class Vector: " << data->get_class_vector()->at(index) << "\n";
-
 		if (data->get_class_vector()->at(index) == 1)
 			num_correct++;
 		count++;
@@ -252,7 +249,7 @@ void network::run_neural(data_handler* dh)
 	std::cin >> iterations;
 	std::cout << "\n";
 
-	std::vector<int> neurons_per_layer = { 11 }; 
+	std::vector<int> neurons_per_layer = { 10 }; 
 
 	auto lambda = [&]()
 	{
