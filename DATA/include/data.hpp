@@ -16,23 +16,23 @@ Container to hold each line item
 class data
 {
 private:
-	std::vector<uint8_t>* feature_vector; // byte(0-255) of data size: 784
 	uint8_t label;
 	int enum_label; //A -> 1, B -> 2
 	double distance;
+	std::vector<uint8_t>* extracted_data; // byte(0-255) of data size: 784
 
 	//Deep
 	std::vector<int>* class_vector;
-	std::vector<float>* normalized_feature_vector;
+	std::vector<float>* extracted_float_data;
 	//Learn
 
 public:
 	data(/* args */);
 	~data();
 
-	void set_feature_vector(std::vector<uint8_t>*);
-	void append_to_feature_vector(uint8_t); // data_handler -> read_feature_vector
-	void set_label(uint8_t); // data_handler -> read_feature_labels
+	void set_extracted_data(std::vector<uint8_t>*);
+	void append_to_extracted_data(uint8_t); // data_handler -> extract_feature_data
+	void set_label(uint8_t); // data_handler -> extract_feature_labels
 	void set_enumerated_label(int); // data_handler -> count_classes
 	void set_distance(double val);
 
@@ -40,23 +40,23 @@ public:
 
 	uint8_t get_label();
 	uint8_t get_enumerated_label();
-	size_t get_feature_vector_size();
-	std::vector<uint8_t>* get_feature_vector();
+	size_t get_extracted_data_size();
+	std::vector<uint8_t>* get_extracted_data();
 
 
 
 
 	// *** Deep *** 
-	void append_to_float_feature_vector(float);
+	void append_to_float_extracted_data(float);
 
 	void set_class_vector(int);
-	void set_normalized_feature_vector(std::vector<float>*);
+	void set_float_extracted_data(std::vector<float>*);
 
 	void print_vector();
 	void print_normalized_vector();
 
 	std::vector<int>* get_class_vector();
-	std::vector<float>* get_normalized_feature_vector();
+	std::vector<float>* get_float_extracted_data();
 	// *** Learn *** 
 
 
@@ -69,8 +69,8 @@ public:
 
 	/*cv::Mat get_image()
 	{
-		int image_width = (int)sqrt(get_feature_vector_size());
-		int image_height = (int)get_feature_vector_size() / image_width;
+		int image_width = (int)sqrt(get_extracted_data_size());
+		int image_height = (int)get_extracted_data_size() / image_width;
 
 		cv::Mat image(image_height, image_width, CV_8UC1);
 
@@ -78,7 +78,7 @@ public:
 		{
 			for (int j = 0; j < image_width; j++)
 			{
-				image.at<uchar>(i, j) = get_feature_vector()->at(i * image_width + j);
+				image.at<uchar>(i, j) = get_extracted_data()->at(i * image_width + j);
 			}
 		}
 

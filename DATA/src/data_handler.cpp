@@ -16,7 +16,7 @@
 data_handler::data_handler()
 {
 	num_classes = 0;
-	feature_vector_size = 0;
+	extracted_data_size = 0;
 	data_array = new std::vector<data*> ;
 	training_data = new std::vector<data*>;
 	test_data = new std::vector<data*>;
@@ -29,7 +29,7 @@ data_handler::~data_handler()
 
 
 
-void data_handler::read_feature_vector(std::string& path)
+void data_handler::extract_feature_data(std::string& path)
 {
 	uint32_t header[4]; // magic|num images|Rowsize|Colsize
 
@@ -66,7 +66,7 @@ void data_handler::read_feature_vector(std::string& path)
 		{
 			if (fread(element, sizeof(element), 1, file)) // For each pixel, one byte of data is read and stored in element
 			{
-				d->append_to_feature_vector(element[0]); // appending element (pixel) which contains a byte(0-255) of data to feature_vector 
+				d->append_to_extracted_data(element[0]); // appending element (pixel) which contains a byte(0-255) of data to extracted_data 
 			}
 			else
 			{
@@ -76,14 +76,12 @@ void data_handler::read_feature_vector(std::string& path)
 		}
 		data_array->emplace_back(d); // contains pointers to all of the data objects representing the images    784Size  -> 60 000 images
 	}
-	normalize();
+	normalize(); // adds to extracted_float_data for deep_learning
 	printf("Success read and stored %lu feature vectors. \n", (int)data_array->size());
 	fclose(file);
 }
 
-
-
-void data_handler::read_feature_labels(std::string path)
+void data_handler::extract_feature_labels(std::string path)
 {
 	uint32_t header[2]; // magic|num images
 	FILE* f = fopen(path.c_str(), "rb");
@@ -124,8 +122,6 @@ void data_handler::read_feature_labels(std::string path)
 	f ? fclose(f) : NULL; // could be 0
 }
 
-
-
 void data_handler::split_data()
 {
 	srand((unsigned int)time(0));
@@ -140,8 +136,8 @@ void data_handler::split_data()
 		std::swap(indices[i], indices[j]); // swaping last one i with random 
 	}
 
-	int train_size = static_cast<int>(data_array->size() * TRAIN_SET_PERCENT);
-	int test_size = static_cast<int>(data_array->size() * TEST_SET_PERCENT);
+	size_t train_size = static_cast<size_t>(data_array->size() * TRAIN_SET_PERCENT);
+	size_t test_size = static_cast<size_t>(data_array->size() * TEST_SET_PERCENT);
 
 	// spliting...
 	for (size_t i = 0; i < indices.size(); ++i)
@@ -215,9 +211,9 @@ int data_handler::get_class_counts() const
 void data_handler::read_csv(std::string path, std::string delimiter)
 {
 	num_classes = 0;
-	std::ifstream data_file;
-	data_file.open(path.c_str());
 	std::string line;
+	std::ifstream data_file;
+	data_file.open(path.c_str()); // get the file
 	if (!data_file)
 	{
 		std::cout << "File2 not found\n";
@@ -228,20 +224,24 @@ void data_handler::read_csv(std::string path, std::string delimiter)
 
 	while (std::getline(data_file, line))
 	{
-		if (line.length() == 0) continue;
-		data* d = new data();
-		d->set_normalized_feature_vector(new std::vector<float>());
-		size_t position = 0;
+		if (line.length() == 0) continue; // skip empty line
+
 		std::string token; // value in between delimiter
-		while ((position = line.find(delimiter)) != std::string::npos)
+		size_t position = 0;
+		data* d = new data();
+
+		d->set_float_extracted_data(new std::vector<float>());
+		
+		while ((position = line.find(delimiter)) != std::string::npos) // npos == size_t -1
 		{
-			token = line.substr(0, position);
-			d->append_to_feature_vector((uint8_t)std::stof(token));
-			line.erase(0, position + delimiter.length());
+			token = line.substr(0, position); // token = 0 - delimiter
+			//d->append_to_extracted_data((uint8_t)std::stof(token));
+			d->append_to_float_extracted_data(std::stof(token)); // stof - convert to float
+			line.erase(0, position + delimiter.length()); // ???
 		}
 		if (class_s_map.find(line) != class_s_map.end())
 		{
-			d->set_label(class_s_map[line]);
+			d->set_label(class_s_map[line]); // adds all classes
 		}
 		else
 		{
@@ -254,7 +254,7 @@ void data_handler::read_csv(std::string path, std::string delimiter)
 	for (data* d : *data_array)
 		d->set_class_vector(num_classes);
 	//normalize();
-	feature_vector_size = data_array->at(0)->get_normalized_feature_vector()->size();
+	extracted_data_size = data_array->at(0)->get_float_extracted_data()->size();
 }
 
 
@@ -263,7 +263,7 @@ void data_handler::normalize()
 	std::vector<float> min, max; //fill lists
 
 	data* d = data_array->at(0);
-	for (const auto& val : *d->get_feature_vector())
+	for (const auto& val : *d->get_extracted_data())
 	{
 		min.emplace_back(val);
 		max.emplace_back(val);
@@ -273,28 +273,28 @@ void data_handler::normalize()
 	for (size_t i = 0; i < data_array->size(); i++)
 	{
 		d = data_array->at(i);
-		for (size_t j = 0; j < d->get_feature_vector_size(); j++)
+		for (size_t j = 0; j < d->get_extracted_data_size(); j++)
 		{
-			float value = (float)d->get_feature_vector()->at(j);
+			float value = (float)d->get_extracted_data()->at(j);
 			if (value < min.at(j)) min[j] = value;
-			if (value > max.at(j)) min[j] = value;
+			if (value > max.at(j)) max[j] = value;
 		}
 	}
 	//normailize data_array
 
 	for (size_t i = 0; i < data_array->size(); i++)
 	{
-		const auto &data_vector = data_array->at(i); //??????????????????????????????????????????????
+		const auto &data_vector = data_array->at(i);
 
-		data_vector->set_normalized_feature_vector(new std::vector<float>());
+		data_vector->set_float_extracted_data(new std::vector<float>());
 		data_vector->set_class_vector(num_classes);	
 
-		for (size_t j = 0; j < data_vector->get_feature_vector_size(); j++)
+		for (size_t j = 0; j < data_vector->get_extracted_data_size(); j++)
 		{
 			if (max[j] - min[j] == 0)
-				data_vector->append_to_float_feature_vector(0.0f);
+				data_vector->append_to_float_extracted_data(0.0f);
 			else
-				data_vector->append_to_float_feature_vector((float)(data_vector->get_feature_vector()->at(j) - min[j]) / (max[j] - min[j]));
+				data_vector->append_to_float_extracted_data((float)(data_vector->get_extracted_data()->at(j) - min[j]) / (max[j] - min[j]));
 		}
 	}
 }
@@ -311,8 +311,8 @@ void data_handler::normalize()
 //    }
 //
 //    data* image_data = data_array->at(index);
-//    int image_width = sqrt(image_data->get_feature_vector_size());
-//    int image_height = image_data->get_feature_vector_size() / image_width;
+//    int image_width = sqrt(image_data->get_extracted_data_size());
+//    int image_height = image_data->get_extracted_data_size() / image_width;
 //
 //    cv::Mat image(image_height, image_width, CV_8UC1);
 //
@@ -320,7 +320,7 @@ void data_handler::normalize()
 //    {
 //        for (int j = 0; j < image_width; j++)
 //        {
-//            image.at<uchar>(i, j) = image_data->get_feature_vector()->at(i * image_width + j);
+//            image.at<uchar>(i, j) = image_data->get_extracted_data()->at(i * image_width + j);
 //        }
 //    }
 //

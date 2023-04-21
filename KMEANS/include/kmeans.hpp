@@ -20,7 +20,7 @@ typedef struct cluster
 
 
 	/// <summary>
-	/// assigning the feature vector from initial to the centroid
+	/// assigning the extracted_data from initial to the centroid
 	/// adding to cluster_points
 	/// initializes a class count map with the initial points label 
 	/// </summary>
@@ -32,9 +32,9 @@ typedef struct cluster
 		centroid = new std::vector<float>;
 		cluster_points = new std::vector<data*>;
 
-		const auto& init_feature_vector = *(initial_point->get_feature_vector());
+		const auto& init_extracted_data = *(initial_point->get_extracted_data());
 
-		centroid->assign(init_feature_vector.begin(), init_feature_vector.end()); // uint8_t to float
+		centroid->assign(init_extracted_data.begin(), init_extracted_data.end()); // uint8_t to float
 		cluster_points->emplace_back(initial_point);
 
 		class_count[initial_point->get_label()] = 1;
@@ -55,7 +55,7 @@ typedef struct cluster
 		{
 			float value = centroid->at(i);				 // [=] i feature of the data point
 			value *= pcluster_size;						 // [*] prev cluster size (weight the contribution of the previous centroid)
-			value += point->get_feature_vector()->at(i); // [+] new point byte at i (new feature value adding to weighted sum of feature values)
+			value += point->get_extracted_data()->at(i); // [+] new point byte at i (new feature value adding to weighted sum of extracted_data)
 			value /= (float)cluster_points->size();	     // [/] new cluster size (to calculate the new centroid value)
 			centroid->at(i) = value;					 // [=] to i centroid calcd_value
 		}

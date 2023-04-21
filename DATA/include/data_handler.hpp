@@ -27,7 +27,7 @@ private:
     std::vector<data *> *validation_data;
 
     int num_classes;
-    size_t feature_vector_size;
+    size_t extracted_data_size;
     std::map<uint8_t, int> class_map;
 
     const double TRAIN_SET_PERCENT = 0.75;
@@ -47,8 +47,8 @@ public:
     data_handler(/* args */);
     ~data_handler();
 
-    void read_feature_vector(std::string& path);
-    void read_feature_labels(std::string path);
+    void extract_feature_data(std::string& path);
+    void extract_feature_labels(std::string path);
     void split_data();
     void count_classes();
 

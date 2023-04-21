@@ -75,7 +75,7 @@ void kmeans::train()
 		float min_dist = std::numeric_limits<float>::max();
 		for (size_t j = 0; j < clusters->size(); j++)
 		{
-			float current_dist = euclidean_distance(clusters->at(j)->centroid, training_data->at(indexes[i])->get_feature_vector());
+			float current_dist = euclidean_distance(clusters->at(j)->centroid, training_data->at(indexes[i])->get_extracted_data());
 
 			if (current_dist < min_dist) // selecting smallest distance
 			{
@@ -105,7 +105,7 @@ float kmeans::validate()
 		size_t best_cluster = 0;
 		for (size_t i = 0; i < clusters->size(); i++)
 		{
-			float crr_dist = euclidean_distance(clusters->at(i)->centroid, query_point->get_feature_vector());
+			float crr_dist = euclidean_distance(clusters->at(i)->centroid, query_point->get_extracted_data());
 			if (crr_dist < min_dist)//minimal distance = best cluster
 			{
 				min_dist = crr_dist;
@@ -128,7 +128,7 @@ float kmeans::test()
 		size_t best_cluster = 0;
 		for (size_t i = 0; i < clusters->size(); i++)
 		{
-			float crr_dist = euclidean_distance(clusters->at(i)->centroid, query_point->get_feature_vector());
+			float crr_dist = euclidean_distance(clusters->at(i)->centroid, query_point->get_extracted_data());
 			if (crr_dist < min_dist)
 			{
 				min_dist = crr_dist;

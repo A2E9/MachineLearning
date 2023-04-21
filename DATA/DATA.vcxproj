@@ -193,10 +193,6 @@
     <ClInclude Include="include\data.hpp" />
     <ClInclude Include="include\data_handler.hpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\train-images-idx3-ubyte" />
-    <None Include="..\train-labels-idx1-ubyte" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

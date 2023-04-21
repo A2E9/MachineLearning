@@ -103,9 +103,9 @@ void KNN::find_knearest(data* query_point)
 double KNN::calculate_distance(data* from_point, data* to_point)
 {
 	double distance = 0.0;
-	const size_t from_size = from_point->get_feature_vector_size(); // 784
+	const size_t from_size = from_point->get_extracted_data_size(); // 784
 
-	if (from_size != to_point->get_feature_vector_size()) // valid size
+	if (from_size != to_point->get_extracted_data_size()) // valid size
 	{
 		printf("\nError Vector Size Mismatch.\n");
 		exit(1);
@@ -116,7 +116,7 @@ double KNN::calculate_distance(data* from_point, data* to_point)
 	for (size_t i = 0; i < from_size; i++)
 	{
 		// (a1-b1)² + (a2-b2)² + ...
-		distance += pow(from_point->get_feature_vector()->at(i) - to_point->get_feature_vector()->at(i), 2);
+		distance += pow(from_point->get_extracted_data()->at(i) - to_point->get_extracted_data()->at(i), 2);
 	}
 	distance = sqrt(distance);
 
