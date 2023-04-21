@@ -27,3 +27,6 @@ and with each epochs the model becomes better which reduces the mse due to learn
 > sigmoid and its derivative (gradients)
 
 > backpropagation is just a bit hard to memorize
+
+#### Tutorial link
+> https://www.youtube.com/watch?v=E1K9SZCm0fQ&list=PL79n_WS-sPHKklEvOLiM1K94oJBsGnz71
