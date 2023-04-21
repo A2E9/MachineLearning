@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <vector>
+#include <random>
 
 
 class neuron
@@ -10,12 +11,10 @@ class neuron
 public:
 
 	float output;
-	float delta;
-	std::vector<float> weights;
+	float error_delta;
+	std::vector<float> weights_list;
 
-	neuron(size_t, int);
-	~neuron();
+	neuron(size_t, int );
 
-	void initialize_weights(size_t prev_layer_size);
 };
 #endif // !__NEURON_HPP

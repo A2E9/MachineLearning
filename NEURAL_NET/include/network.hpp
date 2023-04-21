@@ -2,6 +2,7 @@
 #define __NETWORK_HPP
 
 #include <iostream>
+#include <numeric>
 
 #include "../../DATA/include/data.hpp"
 #include "../../DATA/include/common.hpp"
@@ -16,32 +17,28 @@ class network : public common_data
 public:
 	std::vector<layer*> layers;
 	float learning_rate;
-	float test_performance;
 
-
-
-	//network(/*just to run*/);
 	network();
-
 	network(std::vector<int> spec, size_t, int, float);
 
-	//network(std::vector<int> hidden_layer_spec, int, int);
-	//~network();
 	std::vector<float> fprop(data* data);
-	float activate(std::vector<float>, std::vector<float>); // dot product
-	float transfer(float);
-	float transfer_dervative(float); // for backprop
+	float activate(std::vector<float>, std::vector<float>); 
+	float sigmoid(float);
+	float transfer_dervative(float);
 	void bprop(data* data);
 	void update_weights(data* data);
-	int predict(data* data); // return the index of the maximm value in output array
-	void train(int);
-	float test();
-	void validate();
+	int predict(data* data);
+	void train(size_t);
+
+
+	const float evaluate_performance(const std::vector<data*>&);
+	const void test();
+	const void validate() ;
 
 
 
 
-	void run_neural(data_handler* dh = nullptr);
+	void run_neural(data_handler* dh = nullptr); // MNIST or Iris therefore nullptr
 
 };
 

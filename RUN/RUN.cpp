@@ -13,15 +13,15 @@
 int main()
 {
 	//Preparing data...
-	data_handler* dh = new data_handler();
+	data_handler* mnist = new data_handler();
 	std::string train_images = "../mnist_data/train-images-idx3-ubyte";
 	std::string train_labels = "../mnist_data/train-labels-idx1-ubyte";
 
-	dh->read_feature_vector(train_images);
-	dh->read_feature_labels(train_labels);
+	mnist->extract_feature_data(train_images);
+	mnist->extract_feature_labels(train_labels);
 
-	dh->split_data();
-	dh->count_classes();
+	mnist->split_data();
+	mnist->count_classes();
 
 	while (true)
 	{
@@ -31,19 +31,19 @@ int main()
 		std::cout << "2. K-nearest neighbors classification" << std::endl;
 		std::cout << "3. Deep Learning Neural Network" << std::endl;
 		std::cout << "4. Quit" << std::endl;
-		std::cout << "Your choice: ";
+		std::cout << "Your choice >> ";
 		std::cin >> choice;
 		std::cout << "\n";
 
 		if (choice == 1)
 		{
 			kmeans* km = new kmeans();
-			km->run_kmean(dh);
+			km->run_kmean(mnist);
 		}
 		else if (choice == 2)
 		{
 			KNN* knn = new KNN();
-			knn->run_knn(dh);
+			knn->run_knn(mnist);
 
 		}
 		else if (choice == 3)
@@ -55,17 +55,14 @@ int main()
 			std::cout << "\n";
 
 			if (choice == 1) net->run_neural();
-			else if (choice == 2) net->run_neural(dh);
+
+			else if (choice == 2) net->run_neural(mnist);
 		}
 		else
 		{
 			std::cout << "Exiting program." << std::endl;
+			delete mnist;
 			return 0;
 		}
 	}
-
-	char a = getchar();
-
-	delete dh;
-	return 0;
 }

@@ -1,129 +1,147 @@
-#include "../include/network.hpp"
-//#include "../include/layer.hpp"
+﻿#include "../include/network.hpp"
 
-#include <numeric>
 
 network::network()
 {
 	layers = {};
 	learning_rate = 0.0f;
-	test_performance = 0.0f;
 }
 
-//network::~network(){}
 
-
-network::network(std::vector<int> spec, size_t input_size, int num_classes, float learning_rate)
+network::network(std::vector<int> neurons_per_layer, size_t extracted_data_size, int classes_num, float learning_rate)
 {
-	test_performance = NULL;
+	this->learning_rate = learning_rate;
 
-	for (int i = 0; i < spec.size(); i++)
+	for (int i = 0; i < neurons_per_layer.size(); i++) // { 11, 12 }.size()
 	{
+		int neurons_num = neurons_per_layer[i];
+
 		if (i == 0)
-			layers.emplace_back(new layer(input_size, spec.at(i)));
+			layers.emplace_back(new layer(extracted_data_size, neurons_num)); // MNIST first hidden layer: layer(784, 11) -> 11 neurons -> each (784 + 1 bias) rand weight values
+
 		else
-			layers.emplace_back(new layer(layers.at(i - 1)->neurons.size(), spec.at(i)));
+			layers.emplace_back(new layer(layers.back()->neurons.size(), neurons_num));	// Hidden layer i: layer(11, 12) -> 12 neurons -> (11 + 1 bias) rand weight values
 
 	}
-	layers.emplace_back(new layer(layers.at(layers.size() - 1)->neurons.size(), num_classes));
-	this->learning_rate = learning_rate;
+	layers.emplace_back(new layer(layers.back()->neurons.size(), classes_num)); // Output layer: layer(12, 10) -> 10 neurons -> (10 + 1 bias) rand weight values
 }
 
 
 /// <summary>
-/// activate, transfer, and transfer_derivative: Activation and transfer functions (and their derivatives) used for forward and backward propagation in the network
+/// Activation and sigmoid functions used for forward and backward propagation
+/// 
+/// activation = sumup all weights multipld by all inputs + bias; (random_weights * extracted_data values)
 /// </summary>
-float network::activate(std::vector<float> weights, std::vector<float> input)
+float network::activate(std::vector<float> weights, std::vector<float> inputs)
 {
 	float activation = weights.back(); // bias term
 
 	for (size_t i = 0; i < weights.size() - 1; i++)
 	{
-		activation += weights[i] * input[i];
+		activation += weights[i] * inputs[i];
 	}
 	return activation;
 }
-
-float network::transfer(float activation)
+/// <summary>
+/// add non-linearity to the output of a neuron
+/// </summary>
+/// <param name="activation"></param>
+/// <returns></returns>
+float network::sigmoid(float activation)
 {
-	return 1.0f / (1.0f + exp(-activation));
+	return 1.0f / (1.0f + exp(-activation)); // logistic (sigmoid) function | squashes to the range 0-1
 }
 
+
+/// <summary> Needs further exploration...
+/// in mathematics the derivative is a measure of how a function changes as its input changes
+/// 
+/// The derivative of the activation function is used to calculate the gradient of the error
+/// with respect to the weights, which is then used to update the weights in the direction that minimizes the error
+/// </summary>
+/// <param name="sigmoid(x)"></param>
+/// <returns>
+/// sigmoid'(x) = sigmoid(x) * (1 - sigmoid(x))
+/// </returns>
 float network::transfer_dervative(float output)
 {
-	return output * (1 - output);
+	return output * (1.0f - output);
 }
 
+
 /// <summary>
-///  (forward propagation): A method that calculates the output of each neuron in the network given an input data instance.
+/// (forward propagation): 
+/// Calcs all layers neurons weights together
 /// </summary>
-/// <param name="d"></param>
-/// <returns></returns>
+/// <returns>
+/// network's prediction vector
+/// </returns>
 std::vector<float> network::fprop(data* d)
 {
-	std::vector<float> inputs = *d->get_normalized_feature_vector();
+	std::vector<float> inputs = *d->get_float_extracted_data();
 	for (size_t i = 0; i < layers.size(); i++)
 	{
-		layer* layer = layers.at(i);
 		std::vector<float> new_inputs;
-		for (auto& n : layer->neurons)
-		{
-			float activation = this->activate(n->weights, inputs);
-			n->output = this->transfer(activation);
-			new_inputs.emplace_back(n->output);
+		for (auto& n : layers.at(i)->neurons)
+		{									//   weights_list is extracted_data_size with rand_vals
+			float activation = this->activate(n->weights_list, inputs); // weighted sum of inputs
+			n->output = this->sigmoid(activation); // squash the activation to (0-1) graph
+			new_inputs.emplace_back(n->output); // add the squashed output values of the neurons in new_inputs
 		}
-		inputs = new_inputs;
+		inputs = new_inputs; // used for further layers to calculate
 	}
-	return inputs; // output layer ouput layers
+	return inputs; // outputs (size of last layer)
 }
 
 
-/// <summary>
-/// (backward propagation): A method that calculates the error gradients for each neuron in the network, starting from the output layer and moving back through the hidden layers
+/// <summary>...needs futher exploration...
+/// (backward propagation): 
+/// Calculates the error gradients for each neuron in the network
+/// starting from the output layer and moving back through the hidden layers
 /// </summary>
 /// <param name="data"></param>
 void network::bprop(data* data)
 {
-	for (int i = (int)layers.size() - 1; i >= 0; i--)
+	for (int i = (int)layers.size() - 1; i >= 0; i--) // starting from last layer
 	{
 		layer* layer = layers.at(i);
 		std::vector<float> errors;
-		if (i != layers.size() - 1)
+		if (i != layers.size() - 1) // check if !output-layer 
 		{
-			for (int j = 0; j < layer->neurons.size(); j++)
+			for (int j = 0; j < layer->neurons.size(); j++) // Calc errors for each neuron in the layer
 			{
 				float error = 0.0;
-				for (auto& n : layers.at(i + 1)->neurons)
+				for (auto& n : layers.at(i + 1)->neurons) // ~next~[penultimate] layer each neuron
 				{
-					error += (n->weights.at(j) * n->delta);
+					error += (n->weights_list.at(j) * n->error_delta); // each weight in penultimate layer * error_delta
 				}
-				errors.emplace_back(error);
+				errors.emplace_back(error); 
 			}
 		}
-		else
+		else // first exec
 		{
-			for (int j = 0; j < layer->neurons.size(); j++)
+			for (int j = 0; j < layer->neurons.size(); j++) // all neurons of layer
 			{
-				neuron* n = layer->neurons.at(j);
-				errors.emplace_back((float)data->get_class_vector()->at(j) - n->output); //expected - actual
+				neuron* n = layer->neurons.at(j);										 
+				errors.emplace_back((float)data->get_class_vector()->at(j) - n->output); // check for error [actual - activated (0-1)]
 			}
 		}
-		for (size_t j = 0; j < layer->neurons.size(); j++)
+		for (size_t j = 0; j < layer->neurons.size(); j++) // all neurons of layer
 		{
 			auto* n = layer->neurons.at(j);
-			n->delta = errors.at(j) * this->transfer_dervative(n->output);// gradient / derivative part of backprop
+			n->error_delta = errors.at(j) * this->transfer_dervative(n->output);// gradient ...needs futher exploration... | measure how much the error changes
 		}
 	}
 }
 
 
 /// <summary>
-/// A method that updates the weights of each neuron in the network based on the calculated gradients and the learning rate.
+/// A method that updates the weights_list of each neuron in the network based on the calculated gradients and the learning rate.
 /// </summary>
 /// <param name="data"></param>
 void network::update_weights(data* data)
 {
-	std::vector<float> inputs = *data->get_normalized_feature_vector();
+	std::vector<float> inputs = *data->get_float_extracted_data(); // also weights size
 	for (size_t i = 0; i < layers.size(); i++)
 	{
 		if (i != 0)
@@ -135,11 +153,11 @@ void network::update_weights(data* data)
 		}
 		for (auto& n : layers.at(i)->neurons)
 		{
-			for (size_t j = 0; j < inputs.size(); j++)
+			for (size_t j = 0; j < inputs.size(); j++) // going through all weights
 			{
-				n->weights.at(j) += this->learning_rate * n->delta * inputs.at(j);
+				n->weights_list.at(j) += this->learning_rate * n->error_delta * inputs.at(j); // Σ rate * error_gradient * feature_data (eg mnist pixel bytes)
 			}
-			n->weights.back() += this->learning_rate * n->delta;
+			n->weights_list.back() += this->learning_rate * n->error_delta; // bias term used for atcivation shifting "more flexibility to learn complex patterns"
 		}
 		inputs.clear();
 	}
@@ -147,76 +165,78 @@ void network::update_weights(data* data)
 
 
 /// <summary>
-/// A method that generates a prediction for a given input data instance by selecting the class with the highest output value from the output layer.
+///  A method that trains the network using the training dataset for a specified number of epochs
+/// </summary>
+/// <param name="num_epochs"></param>
+void network::train(size_t num_epochs)
+{
+	for (int i = 1; i <= num_epochs; i++)
+	{
+		float sum_error = 0.0f;
+		size_t num_samples = 0;
+		for (auto& data : *this->training_data) // giving data for prediction and expected
+		{
+			std::vector<float> outputs = fprop(data); // forward propagation to get the output
+			std::vector<int>* expected = data->get_class_vector(); // what is expected
+			float temp_err_sum = 0.0f;
+			for (size_t j = 0; j < outputs.size(); j++) // measure the average squared difference MSE = (1/n) * Σ(actual – forecast)²
+			{
+				float error = expected->at(j) - outputs.at(j); //(actual – forecast)
+				temp_err_sum += error * error; // ²
+			}
+			sum_error += temp_err_sum; // Σ
+			num_samples++;
+			bprop(data);
+			update_weights(data);
+		}
+		float mse = sum_error / num_samples; // * (1/n)
+		std::cout << "Iteration: " << i << "\t Error = " << mse << " MSE" << std::endl;
+	}
+}
+
+
+
+
+/// <summary>
+/// A method that generates a prediction for a given input data instance by selecting the class with the highest output value from the output layer
+/// 
+/// Prediction runs after all processes were done so it is taking calcing with last calcd layer
 /// </summary>
 /// <param name="data"></param>
-/// <returns></returns>
+/// <returns>
+/// distance from first element till position of the biggest element
+/// </returns>
 int network::predict(data* data)
 {
 	std::vector<float> outputs = fprop(data);
 	return (int)std::distance(outputs.begin(), std::max_element(outputs.begin(), outputs.end()));
 }
 
-
-/// <summary>
-///  A method that trains the network using the training dataset for a specified number of epochs.
-/// </summary>
-/// <param name="num_epochs"></param>
-void network::train(int num_epochs)
-{
-	for (int i = 0; i < num_epochs; i++)
-	{
-		float sum_error = 0.0f;
-		for (data* d : *this->training_data)
-		{
-			std::vector<float> outputs = fprop(d);
-			std::vector<int>* expected = d->get_class_vector();
-			float temp_err_sum = 0.0f;
-			for (size_t j = 0; j < outputs.size(); j++)
-			{
-				//temp_err_sum += (float)pow((float)expected->at(j) - (float)outputs.at(j), 2); slow
-				float error = expected->at(j) - outputs.at(j);
-				temp_err_sum += error * error;
-			}
-			sum_error += temp_err_sum;
-			bprop(d);
-			update_weights(d);
-		}
-		std::cout << "Iteration: " << i << "\t Error = " << sum_error << std::endl;
-	}
-}
-
-float network::test()
+const float network::evaluate_performance(const std::vector<data*> &data_set)
 {
 	float num_correct = 0.0;
 	float count = 0.0;
-	for (auto& data : *this->test_data)
+	for (auto& data : data_set)
 	{
-		count++;
-		int index = predict(data);
+		int index = predict(data); // index of the largest output 
+		
+		std::cout << "Class Vector: " << data->get_class_vector()->at(index) << "\n";
 
 		if (data->get_class_vector()->at(index) == 1)
 			num_correct++;
+		count++;
 	}
-	test_performance = (num_correct / count);
-	return test_performance;
+	return (num_correct / count) * 100;
 }
-
-void network::validate()
+const void network::validate() 
 {
-	float num_correct = 0.0;
-	float count = 0.0;
-	for (auto& data : *this->validation_data)
-	{
-		count++;
-		int index = predict(data);
-
-		if (data->get_class_vector()->at(index) == 1)
-			num_correct++;
-	}
-
-	printf("Validation Performance: %.4f\n", num_correct / count);
+	printf("\nValidation Performance: %.4f %%\n", evaluate_performance(*this->validation_data));
 }
+const void network::test() 
+{
+	printf("Test Performance: %.4f %%\n", evaluate_performance(*this->test_data));
+}
+
 
 void network::run_neural(data_handler* dh)
 {
@@ -232,21 +252,41 @@ void network::run_neural(data_handler* dh)
 	std::cin >> iterations;
 	std::cout << "\n";
 
-	std::vector<int> hidden_layers = { 10 };
+	std::vector<int> neurons_per_layer = { 11 }; 
+
 	auto lambda = [&]()
 	{
-		network* net = new network(hidden_layers,
-								   dh->get_training_data()->at(0)->get_normalized_feature_vector()->size(),
-								   dh->get_class_counts(),
+		network* net = new network(neurons_per_layer,
+								   dh->get_training_data()->at(0)->get_float_extracted_data()->size(),	// MNIST 784 <<>> IRIS 4
+								   dh->get_class_counts(),												// MNIST 10 <<>> IRIS 3
 								   0.25f);
+
 		net->set_training_data(dh->get_training_data());
 		net->set_test_data(dh->get_test_data());
 		net->set_validation_data(dh->get_validation_data());
 
 		net->train(iterations);
 		net->validate();
-		printf("Test Performance: %.3f\n", net->test());
+		net->test();
 	};
 	lambda();
 
 }
+
+/*		IRIS.DATA
+
+Attribute Information:
+   1. sepal length in cm
+   2. sepal width in cm
+   3. petal length in cm
+   4. petal width in cm
+   5. class:
+	  -- Iris Setosa
+	  -- Iris Versicolour
+	  -- Iris Virginica
+
+
+Class Distribution: 33.3% for each of 3 classes.
+
+*/
+

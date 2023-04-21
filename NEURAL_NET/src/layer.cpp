@@ -1,10 +1,10 @@
 #include "../include/layer.hpp"
 
-layer::layer(size_t prev_layer_size, int crr_layer_size)
+
+layer::layer(size_t weights_num, int neurons_num)
 {
-	for (size_t i = 0; i < crr_layer_size; i++)
+	for (size_t i = 0; i < neurons_num; i++)
 	{
-		neurons.emplace_back(new neuron(prev_layer_size, crr_layer_size));
+		neurons.emplace_back(new neuron(weights_num, neurons_num));
 	}
-	this->crr_layer_size = crr_layer_size;
 }
