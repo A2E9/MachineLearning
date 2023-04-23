@@ -47,7 +47,7 @@ void kmeans::init_clusters()
 
 	for (size_t i = 0; i < num_clusters; i++)
 	{
-		clusters->emplace_back(new cluster(training_data->at(indexes[i]))); //placing shuffeled indexes or random cluster inst
+		clusters->emplace_back(new cluster(training_data->at(indexes[i]))); //placing shuffeled indexes or random cluster inst k times
 	}
 }
 
@@ -67,13 +67,13 @@ void kmeans::train()
 	std::vector<size_t> indexes(training_data->size());
 	std::iota(indexes.begin(), indexes.end(), 0);
 	std::shuffle(indexes.begin(), indexes.end(), gen);
-
+	//created indexes in size of training data and then shuffle them
 
 	for (size_t i = 0; i < indexes.size(); i++)
 	{
 		size_t best_cluster = 0;
 		float min_dist = std::numeric_limits<float>::max();
-		for (size_t j = 0; j < clusters->size(); j++)
+		for (size_t j = 0; j < clusters->size(); j++) // looping through all clusters to get the smllest distance to the training_data
 		{
 			float current_dist = euclidean_distance(clusters->at(j)->centroid, training_data->at(indexes[i])->get_extracted_data());
 

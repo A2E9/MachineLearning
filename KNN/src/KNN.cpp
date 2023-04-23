@@ -47,35 +47,30 @@ void KNN::set_k(int val)
 uint8_t KNN::predict()
 {
 	std::map<uint8_t, int> class_freq;
-	for (size_t i = 0; i < neighbors->size(); i++)
+
+	for (const auto& neighbor : *neighbors)
 	{
-		if (class_freq.find(neighbors->at(i)->get_label()) == class_freq.end())
-		{
-			class_freq[neighbors->at(i)->get_label()] = 1;
-		}
-		else
-		{
-			class_freq[neighbors->at(i)->get_label()]++;
-		}
+		uint8_t label = neighbor->get_label();
+		class_freq[label] = (class_freq.find(label) == class_freq.end()) ? 
+			1 : class_freq[label] + 1; // if not present set to 1 otherwise add one to the present label
 	}
 
 	uint8_t best = 0;
 	int max = 0;
 
-
-	for (auto& kv : class_freq)
+	for (const auto& kv : class_freq)
 	{
-		if (kv.second > max)// frequency 
+		if (kv.second > max) // frequency 
 		{
-			best = kv.first; // label
+			best = kv.first; // biggest label
 			max = kv.second;
-
 		}
 	}
 
 	delete neighbors;
 	return best;
 }
+
 /// <summary>
 ///  It maintains a priority queue to store the distances of
 ///  training points from the query point and gets the top k neighbors
@@ -83,8 +78,8 @@ uint8_t KNN::predict()
 /// <param name="query_point"></param>
 void KNN::find_knearest(data* query_point)
 {
-	neighbors = new std::vector<data*>; // new vector of data
-	std::priority_queue<std::pair<double, data*>> nearest_queue; // queue for distance and tranining instance
+	neighbors = new std::vector<data*>; // new vector of data | deleting previous neighbors
+	std::priority_queue<std::pair<double, data*>> nearest_queue; // queue for distance and tranining instance | smallest double is prioritized
 
 	for (data* train_point : *training_data)
 	{
@@ -94,8 +89,8 @@ void KNN::find_knearest(data* query_point)
 
 	for (size_t i = 0; i < k; i++)
 	{
-		neighbors->emplace_back(nearest_queue.top().second);
-		nearest_queue.pop();
+		neighbors->emplace_back(nearest_queue.top().second); // get best data object and push into neighbors
+		nearest_queue.pop(); // removes the smallest element
 	}
 }
 
@@ -119,10 +114,7 @@ double KNN::calculate_distance(data* from_point, data* to_point)
 		distance += pow(from_point->get_extracted_data()->at(i) - to_point->get_extracted_data()->at(i), 2);
 	}
 	distance = sqrt(distance);
-
-#elif defined MANHATTAN
-	//MANHATTAN IMPL
-#endif // !EUCLID
+#endif
 	return distance;
 }
 
@@ -145,7 +137,7 @@ double KNN::validate_performance()
 		find_knearest(validation_point); // creating neighbors to the foto
 		uint8_t prediction = predict(); // most frequent label
 
-		auto check = prediction == validation_point->get_label();
+		bool check = prediction == validation_point->get_label();
 		printf("\n%d  <---------[%d -> %d]--------->  %s\n", checked++, prediction, validation_point->get_label(), check ? "same" : "[(FALSE)]");
 
 		//cv::Mat image = validation_point->get_image(); 
