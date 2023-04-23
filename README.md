@@ -9,11 +9,14 @@ Count the unique classes (in this case, there are only numbers 0-9 in the file) 
    
    ## Brief KNN (K-nearest neighbors) description
    
-   Calculate the distance between all training images and a single validation image, then select the k training points with the smallest distances. Determine   the most frequent label among these neighbors and check if it matches the label of the validation image.
+First we loop through each validation object which goes through the find_knearest function to find the smallest distance in all training points. then we look at the k value get k objects with the smallest distance and add them to the neighbors vector. In the for loop we try to predict the current validation object with the neighbors list.we loop through all elements to see which is the most frequent. Lastly we check if that element is correct with the real validation object in the loop.
+   
+   ## Brief Kmeans Clustering description
+First we initialize clusters based on k times the number needed. we create random training item lists k times. then we train the model by calculating Euclidean distances between cluster centroids and training data. We find the smallest distance, add the item to that cluster and update the centroid. During validation we find the minimal distance and check if the most frequent point in the cluster matches the validation set
    
   ## Brief ANN (Artificial Neural Network) description
   
-  So for the first we are setting how many iterations should the model be trained on.
+For the first we are setting how many iterations should the model be trained on.
 next we use forward propagation to make initial predictions for the labels.
 following this we use back propagation to calculate the error gradients and to adjust the 
 weights which helps improve predictions in subsequent epochs to predict the labels.
@@ -27,3 +30,6 @@ and with each epochs the model becomes better which reduces the mse due to learn
 > sigmoid and its derivative (gradients)
 
 > backpropagation is just a bit hard to memorize
+
+#### Tutorial link
+> https://www.youtube.com/watch?v=E1K9SZCm0fQ&list=PL79n_WS-sPHKklEvOLiM1K94oJBsGnz71
